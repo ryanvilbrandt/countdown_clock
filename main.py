@@ -30,6 +30,7 @@ class CountdownClock:
         self.menu = (
             pystray.MenuItem("Reset Clock", self.reset_clock, default=True),
             pystray.MenuItem("Pause / Play", self.pause_play),
+            pystray.MenuItem("Hide", self.hide),
             pystray.MenuItem("Exit", self.on_exit)
         )
         self.icon = pystray.Icon("Countdown Clock", self.image, "Countdown Clock", self.menu)
@@ -103,10 +104,12 @@ class CountdownClock:
         return f"{minutes}:{seconds:>02}"
 
     def reset_clock(self):
+        self.root.deiconify()  # Show the main window, if it's hidden
         self.timer_end = time() + INITIAL_TIME
         self.running = True
 
     def pause_play(self):
+        self.root.deiconify()  # Show the main window, if it's hidden
         if self.running:
             # On pause, store time remaining in paused_time
             self.paused_time = self.timer_end - time()
@@ -116,7 +119,10 @@ class CountdownClock:
             self.timer_end = time() + self.paused_time
             self.running = True
 
-    def on_exit(self, *args):
+    def hide(self):
+        self.root.withdraw()  # Hide the main window
+
+    def on_exit(self, *_args):
         self.icon.stop()  # Remove the system tray icon
         self.root.destroy()
 
